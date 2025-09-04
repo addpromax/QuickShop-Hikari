@@ -95,6 +95,24 @@ no-enough-money-to-keep-shops: <red>You didn't have enough money to keep your sh
   checks, did you have permission set up in there?
 not-a-integer: <red>You must input an integer, your input was {0}.
 translation-country: 'Language Zone: English (en_US)'
+# Lottery system messages
+lottery:
+  shop-empty: <red>This lottery shop has no items to draw from.
+  draw-failed: <red>Lottery draw failed. Please try again later.
+  draw-success: <green>Congratulations! You won: <yellow>{0}
+  reward-dropped: <yellow>Your inventory is full. Reward dropped on the ground.
+  player-drew-from-shop: <green>{0} drew from your lottery shop and won {1} for {2}
+  probability-updated: <green>Item probability updated to {0}
+  invalid-probability: <red>Invalid probability! Please enter a value between 0.0 and 1.0
+  item-removed: <green>Lottery item removed successfully.
+  item-added: <green>Lottery item added successfully with 10% probability.
+  no-item-in-hand: <red>Please hold an item in your hand to add to the lottery.
+  all-items-cleared: <green>All lottery items have been cleared.
+  preview-title: "Lottery Preview - {0}"
+# Sign text for lottery shops
+signs:
+  lottery: <gold>Lottery <green>{0} items
+  lottery-empty: <red>No items
 buying-more-than-selling: '<red>WARNING: You are buying items for more than what you
   are selling them for!'
 purchase-failed: '<red>Purchase failed: Internal Error. Please report this to the
@@ -1862,6 +1880,13 @@ gui:
 history:
   shop:
     gui-title: "View purchase history"
+gui:
+  lottery-management:
+    title: "Lottery Management"
+  keeper:
+    title: "Shop Management"
+  trade:
+    title: "Shop Trading"
     header-icon-multiple-shop: "<white>The query result across {0} shops</white>"
     header-icon-shop-name: '<yellow>Shop {0}</yellow>'
     header-icon-shop-empty-name: '<yellow>Shop in world ''{0}'' at x: {1}, y: {2}, z: {3}</yellow>'

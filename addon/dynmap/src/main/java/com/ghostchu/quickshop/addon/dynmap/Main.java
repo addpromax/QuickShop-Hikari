@@ -217,6 +217,7 @@ public final class Main extends JavaPlugin implements Listener {
       case SELLING -> plain(text().of("shop-type.selling").forLocale());
       case BUYING -> plain(text().of("shop-type.buying").forLocale());
       case FROZEN -> plain(text().of("shop-type.frozen").forLocale());
+      case LOTTERY -> plain(text().of("shop-type.lottery").forLocale());
     };
 
     final String markerName = plain(text().of("addon.dynmap.marker-name",

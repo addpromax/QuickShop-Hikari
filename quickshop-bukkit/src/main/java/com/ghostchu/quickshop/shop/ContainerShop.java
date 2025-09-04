@@ -31,6 +31,7 @@ import com.ghostchu.quickshop.api.shop.Shop;
 import com.ghostchu.quickshop.api.shop.ShopInfoStorage;
 import com.ghostchu.quickshop.api.shop.ShopType;
 import com.ghostchu.quickshop.api.shop.display.DisplayType;
+import com.ghostchu.quickshop.api.shop.lottery.LotteryPool;
 import com.ghostchu.quickshop.api.shop.permission.BuiltInShopPermission;
 import com.ghostchu.quickshop.api.shop.permission.BuiltInShopPermissionGroup;
 import com.ghostchu.quickshop.common.util.CommonUtil;
@@ -38,6 +39,8 @@ import com.ghostchu.quickshop.common.util.JsonUtil;
 import com.ghostchu.quickshop.database.bean.SimpleDataRecord;
 import com.ghostchu.quickshop.obj.QUserImpl;
 import com.ghostchu.quickshop.shop.datatype.ShopSignPersistentDataType;
+import com.ghostchu.quickshop.shop.lottery.LotteryUtil;
+import com.ghostchu.quickshop.shop.lottery.SimpleLotteryPool;
 import com.ghostchu.quickshop.shop.display.AbstractDisplayItem;
 import com.ghostchu.quickshop.util.MsgUtil;
 import com.ghostchu.quickshop.util.PackageUtil;
@@ -140,6 +143,9 @@ public class ContainerShop implements Shop, Reloadable {
   @NotNull
   private BenefitProvider benefit;
 
+  @Nullable
+  private LotteryPool lotteryPool;
+
 
   /**
    * Adds a new shop. You need call ShopManager#loadShop if you create from outside of ShopLoader.
@@ -171,7 +177,8 @@ public class ContainerShop implements Shop, Reloadable {
           @NotNull final String symbolLink,
           @Nullable final String shopName,
           @NotNull final Map<UUID, String> playerGroup,
-          @NotNull final BenefitProvider shopBenefit) {
+          @NotNull final BenefitProvider shopBenefit,
+          @Nullable final LotteryPool lotteryPool) {
 
     this.shopId = shopId;
     this.shopName = shopName;
@@ -214,6 +221,14 @@ public class ContainerShop implements Shop, Reloadable {
     }
     this.symbolLink = symbolLink;
     this.inventoryWrapperProvider = inventoryWrapperProvider;
+    
+    // Initialize lottery pool
+    if (type == ShopType.LOTTERY) {
+      this.lotteryPool = lotteryPool != null ? lotteryPool : new SimpleLotteryPool();
+    } else {
+      this.lotteryPool = lotteryPool; // May be null for non-lottery shops
+    }
+    
     updateShopData();
     // ContainerShop constructor is not allowed to write any persistent data to disk
     // ContainerShop constructor may run on both ServerThread and AsyncThread
@@ -816,6 +831,11 @@ public class ContainerShop implements Shop, Reloadable {
         tradingStringKey = "signs.freeze";
         noRemainingStringKey = "signs.freeze";
       }
+      case LOTTERY -> {
+        shopRemaining = getContainerItems().size();
+        tradingStringKey = "signs.lottery";
+        noRemainingStringKey = "signs.lottery-empty";
+      }
       default -> {
         shopRemaining = 0;
         tradingStringKey = "MissingKey for shop type:" + shopType;
@@ -963,6 +983,9 @@ public class ContainerShop implements Shop, Reloadable {
     }
     if(isFrozen()) {
       return false;
+    }
+    if(isLottery()) {
+      return lotteryPool != null && !lotteryPool.isEmpty();
     }
     return true;
   }
@@ -1718,7 +1741,8 @@ public class ContainerShop implements Shop, Reloadable {
             getInventoryWrapperProvider(),
             saveToSymbolLink(),
             new Date(),
-            getShopBenefit().serialize()
+            getShopBenefit().serialize(),
+            LotteryUtil.serializeLotteryPool(getLotteryPool())
     );
   }
 
@@ -1786,6 +1810,58 @@ public class ContainerShop implements Shop, Reloadable {
   }
 
   @Override
+  public @Nullable LotteryPool getLotteryPool() {
+    return lotteryPool;
+  }
+
+  @Override
+  public void setLotteryPool(@Nullable LotteryPool lotteryPool) {
+    if (getShopType() == ShopType.LOTTERY) {
+      this.lotteryPool = lotteryPool != null ? lotteryPool : new SimpleLotteryPool();
+    } else {
+      this.lotteryPool = lotteryPool;
+    }
+    setDirty();
+  }
+
+  @Override
+  public @Nullable ItemStack drawLottery(@NotNull QUser player) {
+    if (!isLottery() || lotteryPool == null) {
+      return null;
+    }
+    
+    List<ItemStack> containerItems = getContainerItems();
+    return lotteryPool.drawItem(containerItems);
+  }
+  
+  @Override
+  @NotNull
+  public List<ItemStack> getContainerItems() {
+    List<ItemStack> items = new ArrayList<>();
+    
+    // Check if inventory is available
+    if (!inventoryAvailable()) {
+      return items;
+    }
+    
+    try {
+      InventoryWrapper inventoryWrapper = getInventory();
+      if (inventoryWrapper != null) {
+        for (ItemStack item : inventoryWrapper) {
+          if (item != null && !item.getType().isAir()) {
+            items.add(item.clone());
+          }
+        }
+      }
+    } catch (IllegalStateException e) {
+      // Inventory not accessible, return empty list
+      Log.debug("Could not access inventory for shop " + getShopId() + ": " + e.getMessage());
+    }
+    
+    return items;
+  }
+
+  @Override
   public String toString() {
 
     return "ContainerShop{" +
@@ -1815,6 +1891,7 @@ public class ContainerShop implements Shop, Reloadable {
            ", symbolLink='" + symbolLink + '\'' +
            ", shopName='" + shopName + '\'' +
            ", benefit=" + benefit +
+           ", lotteryPool=" + lotteryPool +
            '}';
   }
 }

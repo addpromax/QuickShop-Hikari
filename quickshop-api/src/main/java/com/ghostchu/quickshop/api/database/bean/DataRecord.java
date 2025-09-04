@@ -51,4 +51,7 @@ public interface DataRecord {
 
   @NotNull
   String getBenefit();
+
+  @Nullable
+  String getLotteryPool();
 }

@@ -9,7 +9,8 @@ import org.jetbrains.annotations.Nullable;
 public enum ShopType {
   SELLING(0), // Sell Mode
   BUYING(1), // Buy Mode
-  FROZEN(2); //Locked so no mode
+  FROZEN(2), //Locked so no mode
+  LOTTERY(3); // Lottery Mode
   private final int id;
 
   ShopType(final int id) {

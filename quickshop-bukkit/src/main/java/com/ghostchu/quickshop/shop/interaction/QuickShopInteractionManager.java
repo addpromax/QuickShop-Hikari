@@ -24,6 +24,9 @@ import com.ghostchu.quickshop.api.shop.interaction.InteractionManager;
 import com.ghostchu.quickshop.api.shop.interaction.InteractionType;
 import com.ghostchu.quickshop.shop.interaction.behaviors.ControlPanel;
 import com.ghostchu.quickshop.shop.interaction.behaviors.ControlPanelUI;
+import com.ghostchu.quickshop.shop.interaction.behaviors.LotteryBehavior;
+import com.ghostchu.quickshop.shop.interaction.behaviors.LotteryManagementBehavior;
+import com.ghostchu.quickshop.shop.interaction.behaviors.LotteryPreviewBehavior;
 import com.ghostchu.quickshop.shop.interaction.behaviors.TradeDirect;
 import com.ghostchu.quickshop.shop.interaction.behaviors.TradeDirectAll;
 import com.ghostchu.quickshop.shop.interaction.behaviors.TradeInteraction;
@@ -92,6 +95,9 @@ public class QuickShopInteractionManager implements InteractionManager, Reloadab
 
     behavior(new ControlPanel());
     behavior(new ControlPanelUI());
+    behavior(new LotteryBehavior());
+    behavior(new LotteryManagementBehavior());
+    behavior(new LotteryPreviewBehavior());
     behavior(new TradeDirect());
     behavior(new TradeDirectAll());
     behavior(new TradeInteraction());

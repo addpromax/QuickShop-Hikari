@@ -8,6 +8,9 @@ import com.ghostchu.quickshop.api.economy.benefit.BenefitProvider;
 import com.ghostchu.quickshop.api.obj.QUser;
 import com.ghostchu.quickshop.api.shop.Shop;
 import com.ghostchu.quickshop.api.shop.ShopType;
+import com.ghostchu.quickshop.api.shop.lottery.LotteryPool;
+import com.ghostchu.quickshop.shop.lottery.LotteryUtil;
+import com.ghostchu.quickshop.shop.lottery.SimpleLotteryPool;
 import com.ghostchu.quickshop.common.util.CommonUtil;
 import com.ghostchu.quickshop.common.util.JsonUtil;
 import com.ghostchu.quickshop.common.util.Timer;
@@ -189,7 +192,8 @@ public class ShopLoader implements SubPasteItem {
                                rawInfo.getInvSymbolLink(),
                                rawInfo.getName(),
                                rawInfo.getPermissions(),
-                               rawInfo.getBenefits());
+                               rawInfo.getBenefits(),
+                               rawInfo.getLotteryPool());
     } catch(final Exception e) {
       if(e instanceof IllegalStateException) {
         plugin.logger().warn("Failed to load the shop, skipping...", e);
@@ -316,6 +320,7 @@ public class ShopLoader implements SubPasteItem {
     private boolean needUpdate = false;
 
     private BenefitProvider benefits;
+    private LotteryPool lotteryPool;
 
 
     DataRawDatabaseInfo(@NotNull final DataRecord dataRecord) {
@@ -336,6 +341,13 @@ public class ShopLoader implements SubPasteItem {
       this.invSymbolLink = dataRecord.getInventorySymbolLink();
       this.invWrapper = dataRecord.getInventoryWrapper();
       this.benefits = QSBenefitProvider.deserialize(dataRecord.getBenefit());
+      
+      // Initialize lottery pool for lottery shops
+      this.lotteryPool = (this.type == ShopType.LOTTERY) ? LotteryUtil.deserializeLotteryPool(dataRecord.getLotteryPool()) : null;
+      if (this.lotteryPool == null && this.type == ShopType.LOTTERY) {
+        this.lotteryPool = new SimpleLotteryPool(); // Fallback to empty pool if deserialization failed
+      }
+      
       final String permissionJson = dataRecord.getPermissions();
 
       if(!CommonUtil.isEmptyString(permissionJson) && CommonUtil.isJson(permissionJson)) {
@@ -384,6 +396,13 @@ public class ShopLoader implements SubPasteItem {
       return yamlConfiguration;
     }
 
+    public @Nullable LotteryPool getLotteryPool() {
+      return lotteryPool;
+    }
+
+    public void setLotteryPool(@Nullable LotteryPool lotteryPool) {
+      this.lotteryPool = lotteryPool;
+    }
 
     @Override
     public String toString() {

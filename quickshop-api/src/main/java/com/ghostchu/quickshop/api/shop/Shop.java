@@ -6,6 +6,7 @@ import com.ghostchu.quickshop.api.inventory.InventoryWrapper;
 import com.ghostchu.quickshop.api.inventory.InventoryWrapperManager;
 import com.ghostchu.quickshop.api.localization.text.ProxiedLocale;
 import com.ghostchu.quickshop.api.obj.QUser;
+import com.ghostchu.quickshop.api.shop.lottery.LotteryPool;
 import com.ghostchu.quickshop.api.shop.permission.BuiltInShopPermission;
 import com.ghostchu.quickshop.api.shop.permission.BuiltInShopPermissionGroup;
 import net.kyori.adventure.text.Component;
@@ -631,5 +632,46 @@ public interface Shop {
    * Sets the benefit in this shop
    */
   void setShopBenefit(@NotNull BenefitProvider benefit);
+
+  /**
+   * Checks if this shop is a lottery shop
+   * 
+   * @return true if this is a lottery shop
+   */
+  default boolean isLottery() {
+    return getShopType() == ShopType.LOTTERY;
+  }
+
+      /**
+     * Gets the lottery pool for this shop (only valid for lottery shops)
+     *
+     * @return The lottery pool, or null if not a lottery shop
+     */
+    @Nullable
+    LotteryPool getLotteryPool();
+
+    /**
+     * Sets the lottery pool for this shop
+     *
+     * @param lotteryPool The lottery pool to set
+     */
+    void setLotteryPool(@Nullable LotteryPool lotteryPool);
+
+    /**
+     * Executes a lottery draw for the given player
+     *
+     * @param player The player participating in the lottery
+     * @return The drawn item, or null if lottery failed or shop is not lottery type
+     */
+    @Nullable
+    ItemStack drawLottery(@NotNull QUser player);
+
+    /**
+     * Gets all items in the shop container for lottery purposes
+     * 
+     * @return List of all items in the container
+     */
+    @NotNull
+    List<ItemStack> getContainerItems();
 
 }

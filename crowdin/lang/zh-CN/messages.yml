@@ -70,6 +70,24 @@ no-enough-money-to-keep-shops: <red>你没有足够的金钱去维持你商店�
 3rd-plugin-build-check-failed: <red>第三方插件 <bold>{0}<reset><red> 拒绝了权限检查操作，您在那里有建造权限吗？
 not-a-integer: <red>您只能输入一个数字，您的输入是 {0}。
 translation-country: '本地化语言：简体中文 (zh_CN)'
+# 抽奖系统消息
+lottery:
+  shop-empty: <red>此抽奖箱没有可以抽取的物品。
+  draw-failed: <red>抽奖失败，请稍后再试。
+  draw-success: <green>恭喜！您抽中了：<yellow>{0}
+  reward-dropped: <yellow>您的背包已满，奖励已掉落在地面上。
+  player-drew-from-shop: <green>{0} 从您的抽奖箱中抽奖并赢得了 {1}，花费了 {2}
+  probability-updated: <green>物品概率已更新为 {0}
+  invalid-probability: <red>无效概率！请输入0.0到1.0之间的值
+  item-removed: <green>抽奖物品删除成功。
+  item-added: <green>抽奖物品添加成功，默认概率为10%。
+  no-item-in-hand: <red>请手持一个物品来添加到抽奖箱中。
+  all-items-cleared: <green>所有抽奖物品已清空。
+  preview-title: "抽奖箱预览 - {0}"
+# 抽奖商店告示牌文本
+signs:
+  lottery: <gold>抽奖箱 <green>{0} 个物品
+  lottery-empty: <red>无物品
 buying-more-than-selling: '<red>警告: 你收购的物品价格比出售的要高！'
 purchase-failed: '<red>支付失败：内部错误，请联系服务器管理员'
 denied-put-in-item: <red>您不能将此物品放入您的商店！
@@ -1622,6 +1640,13 @@ gui:
 history:
   shop:
     gui-title: "查看交易记录"
+gui:
+  lottery-management:
+    title: "抽奖箱管理"
+  keeper:
+    title: "商店管理"
+  trade:
+    title: "商店交易"
     header-icon-multiple-shop: "<white>查询结果 {0} 商店</white>"
     header-icon-shop-name: '<yellow>商店 {0}</yellow>'
     header-icon-shop-empty-name: '<yellow>商店在世界 ''{0}'' at x: {1},: {2}, z: {3}</yellow>'

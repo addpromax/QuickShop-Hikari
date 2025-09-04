@@ -116,6 +116,7 @@ public class MetricListener extends AbstractQSListener implements Listener {
       case SELLING -> ShopOperationEnum.PURCHASE_SELLING_SHOP;
       case BUYING -> ShopOperationEnum.PURCHASE_BUYING_SHOP;
       case FROZEN -> ShopOperationEnum.FROZEN;
+      case LOTTERY -> ShopOperationEnum.PURCHASE_SELLING_SHOP; // Treat lottery as selling operation
     };
   }
 }
